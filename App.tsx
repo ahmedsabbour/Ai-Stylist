@@ -1,5 +1,6 @@
-
 import React, { useState, useCallback, useMemo } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Header } from './components/Header';
 import { ClothingCard } from './components/ClothingCard';
 import { AddClothingModal } from './components/AddClothingModal';
@@ -80,23 +81,23 @@ const App: React.FC = () => {
       )}
     </div>
   );
-  
-  const formattedSuggestion = useMemo(() => {
-    return suggestion
-      .replace(/(\*\*|###|##|#) (.*?)( \1|\n)/g, (_, wrapper, content) => {
-          let tag = 'p';
-          if (wrapper === '#') tag = 'h1';
-          if (wrapper === '##') tag = 'h2';
-          if (wrapper === '###') tag = 'h3';
-          if (wrapper === '**') tag = 'strong';
-          return `<${tag} class="${
-              tag === 'h2' ? 'text-xl font-bold text-gray-800 mt-4 mb-2' : 
-              tag === 'strong' ? 'font-semibold text-gray-900' : ''
-          }">${content}</${tag}>`;
-      })
-      .replace(/\* (.*?)\n/g, '<li class="ml-5 list-disc text-gray-600">$1</li>');
-  }, [suggestion]);
 
+  // Check for API key at the top level of the app.
+  if (!process.env.API_KEY) {
+    return (
+      <div className="min-h-screen bg-red-50 flex items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-lg shadow-md text-center max-w-lg">
+          <h1 className="text-2xl font-bold text-red-700 mb-4">Configuration Error</h1>
+          <p className="text-gray-700">
+            The Gemini API key is missing. Please add it to your environment variables to continue.
+          </p>
+          <p className="mt-4 text-sm text-gray-500">
+            If you are deploying on Vercel, add an environment variable named <code className="bg-red-100 text-red-800 px-1 py-0.5 rounded">API_KEY</code> in your project settings.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -130,8 +131,8 @@ const App: React.FC = () => {
                         <p className="text-sm">Your personal stylist is at work!</p>
                     </div>
                 ) : (
-                    <div className="prose prose-teal max-w-none">
-                        <div dangerouslySetInnerHTML={{ __html: formattedSuggestion }} />
+                    <div className="prose prose-teal max-w-none prose-headings:font-bold prose-h2:text-xl">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{suggestion}</ReactMarkdown>
                     </div>
                 )}
             </div>
