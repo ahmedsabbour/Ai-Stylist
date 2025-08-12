@@ -1,0 +1,7 @@
+{
+  "name": "Virtual Stylist AI",
+  "description": "A mobile-first application that acts as your personal AI stylist. Capture your clothes, and let the app mix and match them to create the perfect outfit for any occasion.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
